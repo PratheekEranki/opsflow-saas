@@ -1,0 +1,40 @@
+# Environment
+.env
+*.env.local
+
+# Java
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# IDE
+.idea/
+*.iml
+.vscode/settings.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker volumes
+postgres_data/
+redis_data/
+
+# Maven wrapper downloaded distribution
+backend/.mvn/wrapper/dists/
+
+# Git internals
+*.lock

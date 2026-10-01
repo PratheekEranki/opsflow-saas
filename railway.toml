@@ -1,0 +1,13 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "backend/Dockerfile"
+buildContext = "backend"
+
+[deploy]
+startCommand = "java -jar app.jar"
+healthcheckPath = "/api/actuator/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+
+[environments.production.variables]
+SERVER_PORT = "8080"
