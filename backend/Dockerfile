@@ -3,7 +3,7 @@ FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN sed -i 's/\r//' mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -q
+RUN tr -d '\r' < mvnw > /tmp/mvnw && mv /tmp/mvnw mvnw && chmod +x mvnw && ./mvnw dependency:go-offline -q
 COPY src ./src
 RUN ./mvnw package -DskipTests -q
 
