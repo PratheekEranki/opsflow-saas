@@ -17,7 +17,7 @@ export function useWebSocket({ onTicketUpdate, onNotification, projectId }: UseW
     if (!accessToken || !user || !organization) return
 
     const client = new Client({
-      webSocketFactory: () => new SockJS('/ws'),
+      webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_BASE_URL || ''}/ws`),
       connectHeaders: { Authorization: `Bearer ${accessToken}` },
       reconnectDelay: 5000,
       onConnect: () => {
