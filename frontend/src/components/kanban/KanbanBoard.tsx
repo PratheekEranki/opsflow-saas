@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import type { KanbanBoard as KanbanBoardType, Ticket, TicketStatus } from '../../types'
 import KanbanColumn from './KanbanColumn'
@@ -34,8 +34,8 @@ export default function KanbanBoard({ board, onStatusChange }: Props) {
     onStatusChange(ticketId, targetStatus)
   }
 
-  const handleDragStart = (event: { active: { id: string } }) => {
-    const ticket = Object.values(board).flat().find(t => t.id === event.active.id)
+  const handleDragStart = (event: DragStartEvent) => {
+    const ticket = Object.values(board).flat().find(t => t.id === String(event.active.id))
     setActiveTicket(ticket || null)
   }
 
