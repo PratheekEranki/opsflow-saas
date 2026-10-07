@@ -2,6 +2,9 @@
 
 A production-grade, multi-tenant workflow and incident management platform for engineering teams — built with Java/Spring Boot, React/TypeScript, PostgreSQL, Redis, Kafka, and WebSockets.
 
+**Live demo:** https://opsflow-saas-two.vercel.app  
+**API (Render):** https://opsflow-saas.onrender.com
+
 ## Tech Stack
 
 | Layer | Technologies |
@@ -11,6 +14,7 @@ A production-grade, multi-tenant workflow and incident management platform for e
 | Database | PostgreSQL 15, Flyway migrations, Redis 7 |
 | Messaging | Apache Kafka (audit events, notifications, ticket events) |
 | Real-Time | WebSockets (STOMP over SockJS) |
+| Hosting | Render (backend Docker), Vercel (frontend) |
 | DevOps | Docker Compose, GitHub Actions CI/CD |
 
 ## Features
@@ -19,6 +23,7 @@ A production-grade, multi-tenant workflow and incident management platform for e
 - ✅ JWT authentication with role-based access (Admin / Manager / Member)
 - ✅ Projects, tickets, comments, assignments with full CRUD
 - ✅ Kanban board with drag-and-drop (dnd-kit)
+- ✅ Create tickets with type (Task / Bug / Feature / Incident) and priority
 - ✅ Real-time ticket updates via WebSockets
 - ✅ In-app notifications (WebSocket push)
 - ✅ Redis caching for board state
@@ -54,7 +59,7 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-API available at: http://localhost:8080
+API available at: http://localhost:8080  
 Swagger UI: http://localhost:8080/swagger-ui.html
 
 ### 4. Start frontend
@@ -69,17 +74,57 @@ Frontend at: http://localhost:5173
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and adjust as needed:
+### Backend (`.env` at project root)
 
 | Variable | Default | Description |
 |---|---|---|
-| POSTGRES_DB | opsflow | Database name |
-| POSTGRES_USER | opsflow | DB username |
-| POSTGRES_PASSWORD | opsflow123 | DB password |
-| REDIS_PASSWORD | redis123 | Redis auth password |
-| JWT_SECRET | (set in .env) | 256-bit JWT signing key |
-| JWT_EXPIRATION_MS | 86400000 | Access token TTL (24h) |
-| MAIL_HOST | localhost | SMTP host (MailHog locally) |
+| `POSTGRES_DB` | `opsflow` | Database name |
+| `POSTGRES_USER` | `opsflow` | DB username |
+| `POSTGRES_PASSWORD` | `opsflow123` | DB password |
+| `REDIS_HOST` | `localhost` | Redis host |
+| `REDIS_PORT` | `6379` | Redis port |
+| `REDIS_PASSWORD` | `redis123` | Redis auth password |
+| `KAFKA_BOOTSTRAP_SERVERS` | `localhost:9092` | Kafka broker |
+| `JWT_SECRET` | *(set in .env)* | 256-bit JWT signing key |
+| `JWT_EXPIRATION_MS` | `86400000` | Access token TTL (24h) |
+| `JWT_REFRESH_EXPIRATION_MS` | `604800000` | Refresh token TTL (7d) |
+| `MAIL_HOST` | `localhost` | SMTP host (MailHog locally) |
+| `MAIL_PORT` | `1025` | SMTP port |
+| `APP_BASE_URL` | `http://localhost:8080` | Backend public URL |
+| `FRONTEND_URL` | `http://localhost:5173` | Frontend URL (used for CORS) |
+
+### Frontend
+
+| Variable | Description |
+|---|---|
+| `VITE_API_BASE_URL` | Backend base URL (e.g. `https://opsflow-saas.onrender.com`) |
+
+## Production Deployment
+
+### Backend → Render
+
+1. Create a **Web Service** on Render, connect this repo, set **Root Directory** to `backend`, use **Docker** runtime
+2. Set the following environment variables in Render:
+
+| Variable | Value |
+|---|---|
+| `SPRING_DATASOURCE_URL` | Render Postgres internal URL |
+| `SPRING_DATASOURCE_USERNAME` | Postgres user |
+| `SPRING_DATASOURCE_PASSWORD` | Postgres password |
+| `JWT_SECRET` | A strong random 256-bit key |
+| `FRONTEND_URL` | `https://<your-vercel-app>.vercel.app` |
+| `APP_BASE_URL` | `https://<your-render-service>.onrender.com` |
+
+> **Note:** Render's free tier spins down on inactivity — expect a ~50s cold start on first request.
+
+### Frontend → Vercel
+
+1. Import this repo on Vercel, set **Root Directory** to `frontend`
+2. Add environment variable:
+
+| Variable | Value |
+|---|---|
+| `VITE_API_BASE_URL` | `https://<your-render-service>.onrender.com` |
 
 ## Project Structure
 
@@ -99,7 +144,7 @@ opsflow-saas/
 │   │   └── exception/        # Global error handler
 │   ├── src/main/resources/
 │   │   └── db/migration/     # Flyway SQL migrations
-│   └── Dockerfile            # Java 21 image for Docker
+│   └── Dockerfile            # Java 21 image for production
 ├── frontend/                 # React + TypeScript
 │   └── src/
 │       ├── components/       # Kanban, Layout, common UI
@@ -117,14 +162,16 @@ opsflow-saas/
 
 | Method | Path | Description |
 |---|---|---|
-| POST | /api/organizations/register | Register new organization + admin |
-| POST | /api/auth/login | Login, returns JWT tokens |
-| GET | /api/projects/{id}/tickets/board | Get Kanban board by status |
-| POST | /api/projects/{id}/tickets | Create ticket |
-| PATCH | /api/projects/{id}/tickets/{tid}/status | Move ticket on board |
-| GET | /api/search/tickets?q= | Full-text search |
-| GET | /api/notifications | Get user notifications |
-| POST | /api/notifications/mark-all-read | Mark all read |
+| POST | `/api/organizations/register` | Register new organization + admin user |
+| POST | `/api/auth/login` | Login, returns JWT tokens |
+| GET | `/api/projects` | List projects in org |
+| POST | `/api/projects` | Create project |
+| GET | `/api/projects/{id}/tickets/board` | Get Kanban board grouped by status |
+| POST | `/api/projects/{id}/tickets` | Create ticket |
+| PATCH | `/api/projects/{id}/tickets/{tid}/status` | Move ticket on board |
+| GET | `/api/search/tickets?q=` | Full-text ticket search |
+| GET | `/api/notifications` | Get user notifications |
+| POST | `/api/notifications/mark-all-read` | Mark all notifications read |
 
 ## Resume Accomplishments
 
