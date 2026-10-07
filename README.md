@@ -1,6 +1,10 @@
 # OpsFlow SaaS — Multi-Tenant Workflow & Incident Management Platform
 
-A production-grade, multi-tenant workflow and incident management platform for engineering teams — built with Java/Spring Boot, React/TypeScript, PostgreSQL, Redis, Kafka, and WebSockets.
+OpsFlow is a production-grade, multi-tenant SaaS platform for engineering teams to manage projects, track work, and respond to incidents — all in one place.
+
+Teams sign up with an organization slug, invite members, create projects, and manage work on a real-time Kanban board. Tickets move through **To Do → In Progress → In Review → Done** with live drag-and-drop synced across every connected browser via WebSockets. Role-based access (Admin / Manager / Member) controls who can manage the org and invite new members.
+
+Built with Java/Spring Boot, React/TypeScript, PostgreSQL, Redis, Kafka, and WebSockets.
 
 **Live demo:** https://opsflow-saas-two.vercel.app  
 **API (Render):** https://opsflow-saas.onrender.com
@@ -172,9 +176,3 @@ opsflow-saas/
 | GET | `/api/search/tickets?q=` | Full-text ticket search |
 | GET | `/api/notifications` | Get user notifications |
 | POST | `/api/notifications/mark-all-read` | Mark all notifications read |
-
-## Resume Accomplishments
-
-- **Engineered a multi-tenant SaaS platform** using Java 21/Spring Boot, PostgreSQL, and Redis — supporting org-level data isolation via JWT claims and scoped repository queries across 8 domain entities
-- **Built real-time collaborative Kanban board** using WebSockets (STOMP/SockJS) and React/TypeScript with drag-and-drop, broadcasting ticket state changes to all connected team members instantly
-- **Designed event-driven audit and notification pipeline** using Apache Kafka with 3 dedicated topics — decoupling ticket lifecycle events from real-time notification delivery and persistent audit history
